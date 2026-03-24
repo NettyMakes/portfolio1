@@ -85,19 +85,53 @@ async function getQuestion(){
 } 
   
 // #endregion -------------------------------------------------------------
+
+// #region Questions -------------------------------------------------------
+
+async function answerQuestion(answer){
+    let answerObject = {"answer" : answer};
+
+    response = await fetch(answerURL, { 
+        method: "POST",
+        headers: requestHeaders(),
+        body:JSON.stringify(answerObject)
+    });
+    
+    if(response.status == 200){
+        response = await response.json();
+    }
+  
+    return response;    
+}
+
+// #endregion -------------------------------------------------------------
   
 // #region Logic -------------------------------------------------------
 
-function init(){
+async function init(){
     console.log(colors.cyan + "Portfolio assignment Jonas | Netty");
 
     let currentCache = getCache();
+    let questionData = await getQuestion();
+    
+    console.log(questionData);
 
-    //let questionData = getQuestion();
-  
-    console.log(currentCache);
+
+    switch(questionData.challengeId){
+        case 1:
+            console.log("answering question 1");
+            console.log(await answerQuestion(4));
+            break;
+        case 2:
+            console.log("answering 2");
+            console.log(await answerQuestion("pi"));
+            break;
+        default:
+            console.log("No answer...");
+    }
+
 }
-  
+
 init();
   
 
