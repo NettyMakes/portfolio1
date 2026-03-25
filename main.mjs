@@ -1,5 +1,6 @@
 // Portfolio assignment Jonas | Netty
 import fs from "node:fs"
+import { stringify } from "node:querystring";
 const cachePath = "cache";
 
 // #region Variables ---------------------------------------------------
@@ -27,7 +28,8 @@ const requestHeaders = () => {
 const colors = {
     green: "\u001b[32m",
     cyan: "\u001b[36m",
-    white: "\u001b[37m"
+    white: "\u001b[37m",
+    red: "\u001b[31m",
 };
 
 // #endregion ---------------------------------------------------------------
@@ -100,8 +102,28 @@ async function answerQuestion(answer){
     if(response.status == 200){
         response = await response.json();
     }
-  
-    return response;    
+    
+    if (response.correct){
+        return colors.green + "Correct!" + colors.white;    
+    }else{
+        return colors.red + String(response.message) + colors.white;
+    }
+}
+
+let alchemyDictionary = {
+    "☉" : "Gold",
+    "☿" : "Quicksilver",
+    "☽" : "Silver",
+    "♂" : "Iron"
+}
+
+function alchemicalDecoder(code){
+    let decoded = "";
+    code = String(code);
+    for(let letter of code){
+        decoded += alchemyDictionary[letter];
+    }
+    return decoded;
 }
 
 // #endregion -------------------------------------------------------------
@@ -110,22 +132,43 @@ async function answerQuestion(answer){
 
 async function init(){
     console.log(colors.cyan + "Portfolio assignment Jonas | Netty");
+    console.log("\n" + colors.white)
 
     let currentCache = getCache();
     let questionData = await getQuestion();
     
-    console.log(questionData);
+    //console.log(questionData);
 
 
     switch(questionData.challengeId){
         case 1:
-            console.log("answering question 1");
+            console.log("answering 1");
             console.log(await answerQuestion(4));
             break;
         case 2:
             console.log("answering 2");
             console.log(await answerQuestion("pi"));
             break;
+        case 3:
+            console.log("answering 2");
+            let codeWord = questionData.prompt.split("“")[1].split("”")[0];
+            let decodedWord = alchemicalDecoder(codeWord);
+            console.log("Decoded: " + decodedWord);
+            console.log(await answerQuestion(decodedWord));
+            break;
+        case 4:
+            let brokenPoem = questionData.prompt.split("“")[1].split("”")[0];
+            let decryptedPoem = brokenPoem.replace(/[a-z\W_]/g, "");
+            
+            console.log(decryptedPoem);
+
+            console.log(await answerQuestion(decryptedPoem));
+            break;
+        case 5:
+            let binaryCode = questionData.prompt.split('"')[1];
+            console.log(binaryCode);
+            break;
+
         default:
             console.log("No answer...");
     }
