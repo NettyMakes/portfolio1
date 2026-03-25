@@ -126,6 +126,105 @@ function alchemicalDecoder(code){
     return decoded;
 }
 
+// Logic gates
+function andGate(a, b){
+    return a && b;
+}
+
+function andNotGate(a, b){
+    return (! (a && b))
+}
+
+function notGate(a){
+    return (!a)
+}
+
+function orGate(a, b){
+    if (a || b){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function xorGate(a, b){
+    return (a && !b) || (!a && b);
+}
+
+function resetCircuit(){
+    return {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+    }
+}
+
+
+    //outputPoints["a"] = orGate( andGate(inputPoint["a"], inputPoint["b"]) , notGate(inputPoint("c")));
+    //outputPoints["b"] = andNotGate( xorGate( inputPoint["c"], inputPoint["d"] ) , andGate(inputPoint["d"], inputPoint["e"]));
+    
+function circuitSimulation(inputPoint){
+
+    console.table(inputPoint);
+
+    let returnValue = "";
+    let outputPoints = {
+        "a": false,
+        "b": false
+    }
+    
+    outputPoints["a"] = orGate( andGate(inputPoint[0], inputPoint[1]) , notGate(inputPoint[2]));
+    outputPoints["b"] = andNotGate( xorGate( inputPoint[2], inputPoint[3] ) , andGate(inputPoint[3], inputPoint[4]));
+    
+    console.table(outputPoints);
+
+
+    if (outputPoints["a"] == true){ returnValue += "1"} else { returnValue += "0"};
+    if (outputPoints["b"] == true){ returnValue += "1"} else { returnValue += "1"};
+
+    return returnValue;
+}
+
+function binaryCircuitDecoder(binaryInput){
+    let inputPoints = {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+    }
+
+    let returnValue = "";
+    let binaryCounter = 0;
+    
+    for(let singleBit of binaryInput){
+        if (singleBit == '0'){
+            inputPoints[binaryCounter] = false;
+        }else if(singleBit == '1'){
+            inputPoints[binaryCounter] = true;
+            
+        }else{
+            console.log("BIG ERROR");
+        }
+
+        if (binaryCounter == 4){
+
+            returnValue += circuitSimulation(inputPoints);
+            
+            binaryCounter = 0;
+            inputPoints = resetCircuit();
+            continue;
+        }
+        binaryCounter += 1;
+    }
+
+    returnValue += circuitSimulation(inputPoints)
+
+    return returnValue;
+}
+
 // #endregion -------------------------------------------------------------
   
 // #region Logic -------------------------------------------------------
@@ -167,6 +266,11 @@ async function init(){
         case 5:
             let binaryCode = questionData.prompt.split('"')[1];
             console.log(binaryCode);
+            let circuitOuput = binaryCircuitDecoder(binaryCode)
+
+            console.log("Circut Simulation:\n" + circuitOuput);
+            console.log(await answerQuestion(circuitOuput));
+            
             break;
 
         default:
