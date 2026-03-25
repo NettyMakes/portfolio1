@@ -161,13 +161,12 @@ function resetCircuit(){
     }
 }
 
-
     //outputPoints["a"] = orGate( andGate(inputPoint["a"], inputPoint["b"]) , notGate(inputPoint("c")));
     //outputPoints["b"] = andNotGate( xorGate( inputPoint["c"], inputPoint["d"] ) , andGate(inputPoint["d"], inputPoint["e"]));
     
 function circuitSimulation(inputPoint){
 
-    console.table(inputPoint);
+    //console.table(inputPoint);
 
     let returnValue = "";
     let outputPoints = {
@@ -178,11 +177,11 @@ function circuitSimulation(inputPoint){
     outputPoints["a"] = orGate( andGate(inputPoint[0], inputPoint[1]) , notGate(inputPoint[2]));
     outputPoints["b"] = andNotGate( xorGate( inputPoint[2], inputPoint[3] ) , andGate(inputPoint[3], inputPoint[4]));
     
-    console.table(outputPoints);
+    //console.table(outputPoints);
 
 
     if (outputPoints["a"] == true){ returnValue += "1"} else { returnValue += "0"};
-    if (outputPoints["b"] == true){ returnValue += "1"} else { returnValue += "1"};
+    if (outputPoints["b"] == true){ returnValue += "1"} else { returnValue += "0"};
 
     return returnValue;
 }
@@ -198,13 +197,12 @@ function binaryCircuitDecoder(binaryInput){
 
     let returnValue = "";
     let binaryCounter = 0;
-    
+
     for(let singleBit of binaryInput){
         if (singleBit == '0'){
             inputPoints[binaryCounter] = false;
         }else if(singleBit == '1'){
             inputPoints[binaryCounter] = true;
-            
         }else{
             console.log("BIG ERROR");
         }
@@ -220,7 +218,7 @@ function binaryCircuitDecoder(binaryInput){
         binaryCounter += 1;
     }
 
-    returnValue += circuitSimulation(inputPoints)
+    //returnValue += circuitSimulation(inputPoints)
 
     return returnValue;
 }
@@ -236,7 +234,7 @@ async function init(){
     let currentCache = getCache();
     let questionData = await getQuestion();
     
-    //console.log(questionData);
+    //console.log(questionData.prompt);
 
 
     switch(questionData.challengeId){
@@ -269,8 +267,14 @@ async function init(){
             let circuitOuput = binaryCircuitDecoder(binaryCode)
 
             console.log("Circut Simulation:\n" + circuitOuput);
+
             console.log(await answerQuestion(circuitOuput));
+            break;
+
+        case 6:
             
+
+
             break;
 
         default:
@@ -283,20 +287,3 @@ init();
   
 
 // #endregion -------------------------------------------------------------
-  
-/*
-const answer = { "answer": 4 }
-  
-response = await fetch(regURL, { 
-    method: "POST",
-    headers: requestHeaders,
-    body: JSON.stringify(answer)
- });
-  
-if(response.status == 200){
-    response = await response.json();
-} 
-  
-console.log(response);
-*/
-  
