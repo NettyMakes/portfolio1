@@ -26,10 +26,16 @@ const requestHeaders = () => {
 
 
 const colors = {
+    red: "\u001b[31m",
+    yellow: "\u001b[33m",
     green: "\u001b[32m",
     cyan: "\u001b[36m",
+    blue: "\u001b[34m",
+    magenta: "\u001b[35m",
+
     white: "\u001b[37m",
-    red: "\u001b[31m",
+    reset: "\u001b[0m",
+
 };
 
 // #endregion ---------------------------------------------------------------
@@ -88,7 +94,7 @@ async function getQuestion(){
   
 // #endregion -------------------------------------------------------------
 
-// #region Questions -------------------------------------------------------
+// #region Question Logic -------------------------------------------------------
 
 async function answerQuestion(answer){
     let answerObject = {"answer" : answer};
@@ -223,62 +229,102 @@ function binaryCircuitDecoder(binaryInput){
     return returnValue;
 }
 
+
+let alphabet = "abcdefghijklmnopqrstuvwxyz";
+function labDecode(codedWord, key){
+
+    let decodedWord = "";
+    let keyNum = 0;
+
+    for(let codeLetter of codedWord){
+        for(let keyLetter of key){
+            (codeLetter == keyLetter) ? decodedWord += alphabet[keyNum] :  keyNum+=1;
+        }
+        keyNum = 0;
+    }
+
+    return decodedWord;
+}
+
+
 // #endregion -------------------------------------------------------------
   
-// #region Logic -------------------------------------------------------
+// #region Main -------------------------------------------------------
+
+function printc(text, color){
+    console.log(colors[color] + text + colors['reset']);
+}
 
 async function init(){
-    console.log(colors.cyan + "Portfolio assignment Jonas | Netty");
-    console.log("\n" + colors.white)
+    printc("Portfolio assignment Jonas | Netty", 'cyan');
+    console.log("\n");
 
     let currentCache = getCache();
     let questionData = await getQuestion();
     
-    //console.log(questionData.prompt);
-
+    printc("Current Question: " + questionData.challengeId, "cyan")
+    printc(questionData.prompt, 'yellow');
+    console.log('\n');
 
     switch(questionData.challengeId){
         case 1:
-            console.log("answering 1");
+            printc("answering 1", 'cyan');
             console.log(await answerQuestion(4));
             break;
         case 2:
-            console.log("answering 2");
+            printc("answering 2", 'cyan');
             console.log(await answerQuestion("pi"));
             break;
         case 3:
-            console.log("answering 2");
             let codeWord = questionData.prompt.split("“")[1].split("”")[0];
             let decodedWord = alchemicalDecoder(codeWord);
-            console.log("Decoded: " + decodedWord);
+            printc("Decoded: " + decodedWord, 'cyan');
             console.log(await answerQuestion(decodedWord));
             break;
         case 4:
             let brokenPoem = questionData.prompt.split("“")[1].split("”")[0];
             let decryptedPoem = brokenPoem.replace(/[a-z\W_]/g, "");
             
-            console.log(decryptedPoem);
+            printc(brokenPoem, 'magenta');
+            printc(decryptedPoem, 'cyan');
 
             console.log(await answerQuestion(decryptedPoem));
             break;
         case 5:
             let binaryCode = questionData.prompt.split('"')[1];
-            console.log(binaryCode);
+            printc(binaryCode,'magenta');
             let circuitOuput = binaryCircuitDecoder(binaryCode)
 
-            console.log("Circut Simulation:\n" + circuitOuput);
+            printc("Circut Simulation:\n" + circuitOuput,'magenta');
 
             console.log(await answerQuestion(circuitOuput));
             break;
 
         case 6:
+            let labNotes = await fetch("https://alchemy-kd0l.onrender.com/notes.md");
+            let codedNotes = await fetch("https://alchemy-kd0l.onrender.com/strangeNote.txt");
+            labNotes = await labNotes.text();
             
+            codedNotes = (await codedNotes.text()).split(/[\n\s]/);
+            codedNotes = codedNotes.filter(item => item !== '');
 
+            let labCipherKey = labNotes.replace(/[a-z\W_]/g, "")
 
+            printc("Cipher Key: " + labCipherKey, 'magenta');
+            printc("Strange Notes: " + codedNotes, 'magenta');
+
+            printc("Decoding...", 'cyan')
+
+            let decipheredNotes = [];
+            for(let strangeWords of codedNotes){
+                decipheredNotes.push(labDecode(strangeWords, labCipherKey));
+            }
+            console.log(decipheredNotes);
+
+            console.log(answerQuestion(decipheredNotes));
             break;
-
         default:
-            console.log("No answer...");
+            printc("No answer registered", 'cyan');
     }
 
 }
