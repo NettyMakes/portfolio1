@@ -243,7 +243,7 @@ function labDecode(codedWord, key){
         keyNum = 0;
     }
 
-    return decodedWord;
+    return decodedWord.charAt(0).toUpperCase() + decodedWord.slice(1) + " ";
 }
 
 
@@ -254,6 +254,8 @@ function labDecode(codedWord, key){
 function printc(text, color){
     console.log(colors[color] + text + colors['reset']);
 }
+
+
 
 async function init(){
     printc("Portfolio assignment Jonas | Netty", 'cyan');
@@ -317,11 +319,12 @@ async function init(){
 
             let decipheredNotes = [];
             for(let strangeWords of codedNotes){
-                decipheredNotes.push(labDecode(strangeWords, labCipherKey));
+                decipheredNotes += labDecode(strangeWords, labCipherKey);
             }
+            decipheredNotes = decipheredNotes.trimEnd();
             console.log(decipheredNotes);
-
-            console.log(answerQuestion(decipheredNotes));
+            
+            console.log(await answerQuestion(decipheredNotes));
             break;
         default:
             printc("No answer registered", 'cyan');
